@@ -155,6 +155,7 @@ void loop() {
 
   #ifdef DEBUG
     //debugAddresses();
+    //debugButton();
     //debugLeds();
     debugPressures();
     Serial.println("");    
@@ -252,6 +253,11 @@ void bubbleSort() {
     Serial.print(addr_long_hpa_min);
     Serial.print("\t");
     Serial.print(addr_long_hpa_max);
+  }
+  
+  void debugButton() {
+    switch_reset_eeprom = !digitalRead(PIN_RESET_EEPROM);
+    Serial.print(switch_reset_eeprom);
   }
   
   void debugLeds() {
