@@ -6,3 +6,8 @@ An average air pressure is displayed by white light, high pressure in red and lo
 The minimum and maximum pressure values are adapted automatically and stored in the EEPROM.
 
 ![Frizzing sketch](doc/Layout.png?raw=true "Frizzing sketch")
+
+
+## Manuals
+
+* [en English](/doc/manuals/en_manual.md)
