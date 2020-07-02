@@ -11,3 +11,4 @@ The minimum and maximum pressure values are adapted automatically and stored in 
 ## Manuals
 
 * [en English](/doc/manuals/en_manual.md)
+* [de Deutsch](/doc/manuals/de_Benutzerhandbuch.md)
