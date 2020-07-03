@@ -27,3 +27,5 @@ Sie können das den Erfolg des Zurücksetzens testen, indem Sie die Lampe einen 
 
 ## Technische Informationen
 Energieverbrauch: ca. 50 mA @ 5 V (0,25 W)
+
+Quellcode: https://github.com/BitScout/StormCandleRev2

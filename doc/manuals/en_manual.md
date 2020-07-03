@@ -26,3 +26,5 @@ At the end of the green light, the device will be reset and start flickering whi
 
 ## Technical information
 Power consumption: ca. 50 mA @ 5 V
+
+Source code: https://github.com/BitScout/StormCandleRev2
