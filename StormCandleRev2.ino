@@ -44,6 +44,8 @@ Adafruit_BMP085 bmp;
 
 #define PIN_LED 6 // D6
 #define PIN_RESET_EEPROM 12 // D12
+#define PIN_ACCEL_Z A1
+#define ACCEL_TRESHOLD 400
 #define MEDIAN_COUNT 7 // Number of measurements per loop
 #define STARTUP_RANGE 20 // Distance (in Pascale) between initial measurement and maximum / minimum at first startup
 #define COLOR_BRIGHTNESS_FACTOR 1 // Make the color LEDs less bright
@@ -61,6 +63,7 @@ float led_max = 255;
 int red  = 0;
 int blue = 0;
 
+int  acceleration_z;
 bool switch_reset_eeprom;
 bool initializing = false;
 
@@ -91,7 +94,7 @@ void setup() {
   }
 
   // Check for reset button
-  switch_reset_eeprom = !digitalRead(PIN_RESET_EEPROM);
+  readResetSwitch();
 
   if(switch_reset_eeprom) {
     for(i = 0; i < 3; i++) {
@@ -102,7 +105,7 @@ void setup() {
     }
 
     // Read value again (to be sure)
-    switch_reset_eeprom = !digitalRead(PIN_RESET_EEPROM);
+    readResetSwitch();
 
     if(switch_reset_eeprom) {
       setColor(0, 255, 0, 0);
@@ -156,8 +159,9 @@ void loop() {
   #ifdef DEBUG
     //debugAddresses();
     //debugButton();
+    debugAcceleration();
     //debugLeds();
-    debugPressures();
+    //debugPressures();
     Serial.println("");    
   #endif
 }
@@ -184,6 +188,15 @@ void calculateAddresses() {
   addr_long_hpa_min = addr_int_addresses_start;
   addr_long_hpa_max = addr_long_hpa_min + sizeof(long);
   address_block_end = addr_long_hpa_max + sizeof(long);
+}
+
+void readResetSwitch() {
+  switch_reset_eeprom = !digitalRead(PIN_RESET_EEPROM);
+  acceleration_z = analogRead(PIN_ACCEL_Z);
+
+  if(acceleration_z > ACCEL_TRESHOLD) {
+    switch_reset_eeprom = true;
+  }
 }
 
 void measureAndCalculate() {
@@ -258,6 +271,11 @@ void bubbleSort() {
   void debugButton() {
     switch_reset_eeprom = !digitalRead(PIN_RESET_EEPROM);
     Serial.print(switch_reset_eeprom);
+  }
+
+  void debugAcceleration() {
+    acceleration_z = analogRead(PIN_ACCEL_Z);
+    Serial.print(acceleration_z);
   }
   
   void debugLeds() {
