@@ -27,7 +27,7 @@ To perform a reset, first disconnect the device from power. Hold down the reset 
 #### Revision 2b (no reset button)
 To perform a reset, first disconnect the device from power. Turn over the device and connect the device to power.
 
-![Frizzing sketch](doc/rev2b_reset.png?raw=true "Rev2b reset process")
+![Rev2b reset process](rev2b_reset.png?raw=true "Rev2b reset process")
 
 The device will blink three times red (1 second) and once green (2 seconds). 
 At the end of the green light, the device will be reset and start flickering white, blue and red.

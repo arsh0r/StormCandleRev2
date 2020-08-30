@@ -27,7 +27,7 @@ Um eine Rücksetzung durchzuführen, trennen Sie das Gerät bitte zunächst vom 
 #### Revision 2b (Ohne Reset-Knopf)
 Um eine Rücksetzung durchzuführen, trennen Sie das Gerät bitte zunächst vom Strom. Drehen Sie die Lampe auf den Kopf und halten Sie sie so. Verbinden Sie das Gerät nun mit der Stromzufuhr.
 
-![Frizzing sketch](doc/rev2b_reset.png?raw=true "Rev2b reset process")
+![Rev2b reset process](rev2b_reset.png?raw=true "Rev2b reset process")
 
 Die StormCandle blinkt dreimal rot (eine Sekunde Leuchtdauer) und anschließen einmal grün (zwei Sekunden). Sobald das grüne Licht erlischt sind die Höchst- und Tiefstwerte zurückgesetzt und die Lampe flackert in den Farben Warmweiß, Rot und Blau.
 Das Flackern entsteht durch geringfügige Luftdruckschwankungen und lässt nach, sobald das Gerät höhere und niedriger Luftdrücke "erlernt" hat. Dies kann einige Stunden oder Tage dauern, während derer die Lampe **nicht** durchgehend in Betrieb sein muss.
