@@ -51,32 +51,41 @@ Adafruit_BMP085 bmp;
 #define COLOR_BRIGHTNESS_FACTOR 1 // Make the color LEDs less bright
 #define WHITE_BRIGHTNESS_FACTOR 0.1 // Make the white LED less bright
 
-int  i;
-int  iMedian;
+// Misc
+int i;
+int iMedian;
+bool initializing = false;
+unsigned long timestamp_last_readout;
+
+// Pressures
 long pa_measurements[MEDIAN_COUNT]; 
 long pa_current;
 long pa_max;
 long pa_min;
 long pa_center;
-float led_max = 255;
 
-int red  = 0;
-int blue = 0;
-
-int  acceleration_z;
+// Manual inputs
 bool switch_reset_eeprom;
-bool initializing = false;
+int  acceleration_z;
 
+// Addresses
 int addr_int_addresses_start; // Start of the currently used address space
 int addr_long_hpa_min;
 int addr_long_hpa_max;
 int address_block_end; // The first address after all used addresses
+
+// LED
+float led_max = 255;
+int   red  = 0;
+int   blue = 0;
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(1, PIN_LED, NEO_RGBW + NEO_KHZ800);
 
 
 void setup() {
   setupHardware();
+
+  timestamp_last_readout = millis();
 
   // First pressure measurement
   iMedian = MEDIAN_COUNT / 2;
@@ -155,24 +164,21 @@ void setup() {
 void loop() {
   measureAndCalculate();
   setLed();
+  outputPressureOverSerial();
 
   #ifdef DEBUG
     //debugAddresses();
     //debugButton();
-    debugAcceleration();
+    //debugAcceleration();
     //debugLeds();
-    //debugPressures();
+    debugPressures();
     Serial.println("");    
   #endif
 }
 
 void setupHardware() {
-  #ifdef DEBUG
-    Serial.begin(9600);
-  #endif
-
+  Serial.begin(9600);
   strip.begin();
-  
   pinMode(PIN_RESET_EEPROM, INPUT_PULLUP);
   
   if (!bmp.begin()) {
@@ -237,6 +243,14 @@ void setLed() {
   if (pa_current >= pa_center) blue = 0; else blue = led_max - (led_max * (pa_current - pa_min) / (pa_center - pa_min));
 
   setColor(red * COLOR_BRIGHTNESS_FACTOR, 0, blue * COLOR_BRIGHTNESS_FACTOR, led_max * WHITE_BRIGHTNESS_FACTOR);
+}
+
+void outputPressureOverSerial() {
+  if(millis() - timestamp_last_readout > 60000) {
+    timestamp_last_readout = millis();
+    Serial.print(pa_current);
+    Serial.println("");
+  }
 }
 
 void setColor(int r, int g, int b, int w) {
