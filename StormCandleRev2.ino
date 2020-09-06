@@ -57,9 +57,14 @@ int iMedian;
 bool initializing = false;
 unsigned long timestamp_last_readout;
 
+bool firstrun = false; //first run;
+float cycletime; //cycle time in [ms]
+unsigned long micros_last; //last micros() in ms
+
 // Pressures
 long pa_measurements[MEDIAN_COUNT]; 
 long pa_current;
+float pa_current_PT1;
 long pa_max;
 long pa_min;
 long pa_center;
@@ -159,10 +164,16 @@ void setup() {
   }
 
   calculateCenter();
+  
+  //init cycle time measurement
+  micros_last = micros();
+  firstrun = true;
 }
   
 void loop() {
-  measureAndCalculate();
+  calcCycleTime();
+  
+  measureAndCalculatePT1();
   setLed();
   outputPressureOverSerial();
 
@@ -174,6 +185,7 @@ void loop() {
     debugPressures();
     Serial.println("");    
   #endif
+  firstrun = false;
 }
 
 void setupHardware() {
@@ -271,6 +283,68 @@ void bubbleSort() {
       }
     }
   }
+}
+
+void calcCycleTime() {
+  unsigned long micros_current; //current lifetime in [us]
+  
+  //generate cycle time  
+  micros_current = micros();
+  if (micros_current >= micros_last) {
+    cycletime = float(micros_current - micros_last) / 1000;
+  }
+  else { //micros() overflows approximately every 72 minutes.
+    cycletime = float(0xFFFFFF - micros_last + micros_current) / 1000;
+  }
+  micros_last = micros_current;
+}
+
+void PT1(float in, float T, float &out) {
+  float out_diff;
+  float diff_T;
+
+  if (firstrun) {
+    out = in;
+  } 
+  else {
+    out_diff = in - out;
+    diff_T = abs(cycletime / T);
+    if (diff_T < 1) {
+      out = out + (out_diff * diff_T);
+    }
+    else {
+      out = in;
+    }
+    if (abs(out) < 1.0e-7) {
+      out = 0.0;
+    }
+  }
+}
+
+void measureAndCalculatePT1() {
+  long pa_measurement;
+  
+  // Collect measurements
+  do {
+    pa_measurement = bmp.readPressure();
+  } while (pa_measurement < 900);
+
+  PT1(pa_measurement, 2000.0, pa_current_PT1);
+
+  pa_current = pa_current_PT1;
+
+  // Calculate minimum, maximum and center values
+  if(pa_current > pa_max) {
+    pa_max = pa_current;
+    EEPROM.put(addr_long_hpa_max, pa_max);
+  }
+  
+  if(pa_current < pa_min) {
+    pa_min = pa_current;
+    EEPROM.put(addr_long_hpa_min, pa_min);
+  }
+  
+  calculateCenter();
 }
 
 #ifdef DEBUG
